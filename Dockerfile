@@ -3,14 +3,14 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
 # Copy CSPROJ and restore as distinct layers
-COPY ["YourProjectName/YourProjectName.csproj", "YourProjectName/"]
-RUN dotnet restore "YourProjectName/YourProjectName.csproj"
+COPY ["FYP-Navperks/FYP-Navperks.csproj", "FYP-Navperks/"]
+RUN dotnet restore "FYP-Navperks/FYP-Navperks.csproj"
 
 # Copy everything else
 COPY . .
 
-WORKDIR "/src/YourProjectName"
-RUN dotnet publish "YourProjectName.csproj" -c Release -o /app/publish
+WORKDIR "/src/FYP-Navperks"
+RUN dotnet publish "FYP-Navperks.csproj" -c Release -o /app/publish
 
 # Stage 2: Runtime
 FROM mcr.microsoft.com/dotnet/aspnet:8.0

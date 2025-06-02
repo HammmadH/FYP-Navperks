@@ -23,7 +23,6 @@ namespace FYP_Navperks.Services
         {
             _httpClient = new HttpClient();
 
-            // Map barriers (NodeMCUs) with IP addresses from appsettings.json
             _barrierEndpoints = new Dictionary<string, string>
             {
                 { "Barrier1", configuration["HardwareSettings:Barrier1"] },
@@ -40,7 +39,7 @@ namespace FYP_Navperks.Services
                 throw new Exception($"No barrier found for slotCode {slotCode}");
 
             var endpoint = _barrierEndpoints[barrierName];
-            var url = $"{endpoint}/reserve"; // Example: http://192.168.1.50/reserve
+            var url = $"{endpoint}/reserve"; 
 
             var content = new StringContent($"{{\"slotCode\":\"{slotCode}\"}}", Encoding.UTF8, "application/json");
 
@@ -57,7 +56,7 @@ namespace FYP_Navperks.Services
                 throw new Exception($"No barrier found for slotCode {slotCode}");
 
             var endpoint = _barrierEndpoints[barrierName];
-            var url = $"{endpoint}/release"; // Example: http://192.168.1.50/release
+            var url = $"{endpoint}/release"; 
 
             var content = new StringContent($"{{\"slotCode\":\"{slotCode}\"}}", Encoding.UTF8, "application/json");
 
@@ -67,7 +66,6 @@ namespace FYP_Navperks.Services
                 throw new Exception($"Failed to release hardware slot {slotCode} on {barrierName}");
         }
 
-        // Helper method
         private string GetBarrierName(string slotCode)
         {
             if (slotCode.StartsWith("CS-S1") || slotCode.StartsWith("CS-S2") || slotCode.StartsWith("CS-S3"))

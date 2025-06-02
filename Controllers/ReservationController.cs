@@ -69,13 +69,13 @@ namespace FYP_Navperks.Controllers
         }
 
         [HttpPut("{reservationId}")]
-        public async Task<IActionResult> ReleaseSlot(int reservationId, [FromBody] ReservationRequest request)
+        public async Task<IActionResult> ReleaseSlot(int reservationId, [FromBody] ReleaseRequest request)
         {
             if (reservationId <= 0 || string.IsNullOrWhiteSpace(request.SlotCode))
                 return BadRequest("Invalid reservation ID or slot code");
 
             DateTime releasedTime = DateTime.Now;
-            var isReleased = await _dbHelper.ReleaseSlot(reservationId, releasedTime);
+            var isReleased = await _dbHelper.ReleaseSlot(reservationId, request.SlotCode, releasedTime);
 
             if (isReleased)
             {

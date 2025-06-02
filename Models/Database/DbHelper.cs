@@ -90,7 +90,7 @@ namespace FYP_Navperks.Models.Database
 
         //User
 
-        public async Task<bool> AddUser(string ipAddress)
+        public async Task<string> AddUser(string ipAddress)
         {
             using (var connection = new SqlConnection(_connectionString))
             {
@@ -100,8 +100,15 @@ namespace FYP_Navperks.Models.Database
                     command.CommandType = CommandType.StoredProcedure;
                     command.Parameters.AddWithValue("@IPAddress", ipAddress);
 
-                    var result = await command.ExecuteNonQueryAsync();
-                    return result > 0;
+                    var statusParam = new SqlParameter("@StatusMessage", SqlDbType.NVarChar, 100)
+                    {
+                        Direction = ParameterDirection.Output
+                    };
+                    command.Parameters.Add(statusParam);
+
+                    await command.ExecuteNonQueryAsync();
+
+                    return statusParam.Value.ToString();
                 }
             }
         }
@@ -319,7 +326,7 @@ namespace FYP_Navperks.Models.Database
             }
         }
 
-        public async Task<bool> ReleaseSlot(int reservationId, DateTime releasedTime)
+        public async Task<bool> ReleaseSlot(int reservationId, string slotCode, DateTime releasedTime)
         {
             using (var connection = new SqlConnection(_connectionString))
             {
@@ -329,13 +336,23 @@ namespace FYP_Navperks.Models.Database
                 {
                     command.CommandType = CommandType.StoredProcedure;
                     command.Parameters.AddWithValue("@ReservationId", reservationId);
+                    command.Parameters.AddWithValue("@SlotCode", slotCode);
                     command.Parameters.AddWithValue("@ReleasedTime", releasedTime);
 
-                    var result = await command.ExecuteNonQueryAsync();
-                    return result > 0;
+                    var returnParameter = new SqlParameter("@ReturnVal", SqlDbType.Int)
+                    {
+                        Direction = ParameterDirection.ReturnValue
+                    };
+                    command.Parameters.Add(returnParameter);
+
+                    await command.ExecuteNonQueryAsync();
+
+                    int result = (int)returnParameter.Value;
+                    return result == 1;
                 }
             }
         }
+
 
         public async Task<List<ReservationDetails>> GetReservationsWithSlotCode()
         {

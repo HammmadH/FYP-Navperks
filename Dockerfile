@@ -1,19 +1,22 @@
-﻿# Use the official .NET SDK image to build the app
+# Stage 1: Build
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-WORKDIR /app
+WORKDIR /src
 
-# Copy everything and build the app
-COPY . ./
-RUN dotnet restore
-RUN dotnet publish -c Release -o out
+# Copy CSPROJ and restore as distinct layers
+COPY ["FYP-Navperks/FYP-Navperks.csproj", "FYP-Navperks/"]
+RUN dotnet restore "FYP-Navperks/FYP-Navperks.csproj"
 
-# Use the runtime image
+# Copy everything else
+COPY . .
+
+WORKDIR "/src/FYP-Navperks"
+RUN dotnet publish "FYP-Navperks.csproj" -c Release -o /app/publish
+
+# Stage 2: Runtime
 FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /app
-COPY --from=build /app/out .
+COPY --from=build /app/publish .
 
-# Expose port
 EXPOSE 8080
-
-# Set the entry point
+ENV ASPNETCORE_URLS=http://+:8080
 ENTRYPOINT ["dotnet", "FYP-Navperks.dll"]
